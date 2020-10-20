@@ -55,13 +55,20 @@ void balance_color(cv::Mat &img)
 
 int main()
 {
-	std::string image_path = "/Users/vincent/Documents/Repo/opencv_projects/resources/source.jpg";
-
+	// std::string image_path = "/Users/vincent/Documents/Repo/opencv_projects/resources/source.jpg";
+	const std::string image_path = "/Users/vincent/Documents/Repo/Halide_Image_Process/dog.png";
 	cv::Mat img = cv::imread(image_path, 1);
+	cv::cvtColor(img, img, cv::COLOR_BGRA2BGR);
 	cv::imshow("img", img);
 	cv::waitKey(0);
 	std::vector<cv::Mat> bgr_channels;
 	cv::split(img, bgr_channels);
 
 	balance_color(bgr_channels[0]);
+	balance_color(bgr_channels[1]);
+	balance_color(bgr_channels[2]);
+	cv::merge(bgr_channels, img);
+	cv::imshow("result", img);
+	cv::waitKey(0);
+	return 0;
 }
