@@ -2,13 +2,14 @@
 
 class ColorBalance : public Halide::Generator<ColorBalance>
 {
+public:
 	// declare input and output buffer as member variables
-	Halide::Input<Halide::Buffer<float>> input{"input", 3};
-	Halide::Output<Halide::Buffer<float>> output{"output", 3};
+	Input<Halide::Buffer<float>> input{"input", 3};
+	Output<Halide::Buffer<float>> output{"output", 3};
 
-	Halide::Var x("x");
-	Halide::Var y("y");
-	Halide::Var c("c");
+	Halide::Var x;
+	Halide::Var y;
+	Halide::Var c;
 
 	void generate() {
 		// 1. calculate histogram
@@ -47,12 +48,18 @@ class ColorBalance : public Halide::Generator<ColorBalance>
 		max_sum(c) = Halide::sum(max_count(rcdf.x, c));
 
 		// 4. adjust the ove dark and over light pixels
-		Halide::Func color_balance("color_balance");
-		color_balance(x, y, c) = 0.0f;
-		color_balance(x, y, c) = Halide::clamp(input(x, y, c), min_sum(c)/255.0f, max_sum(c)/255.0f);
+		// Halide::Func color_balance("color_balance");
+		// color_balance(x, y, c) = 0.0f;
+		output(x, y, c) = Halide::clamp(input(x, y, c), min_sum(c)/255.0f, max_sum(c)/255.0f);
 	}
 
 	void schedule() {
-		
+		if (auto_schedule) {
+			input.set_estimates({{0, 1024}, {0, 1024}, {0, 3}});
+			output.set_estimates({{0, 1024}, {0, 1024}, {0, 3}});
+		}
 	}
 };
+
+HALIDE_REGISTER_GENERATOR(ColorBalance, color_balance_gen)
+
