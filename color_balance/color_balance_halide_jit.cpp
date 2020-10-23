@@ -64,7 +64,7 @@ int main(int argc, char ** argv)
 
 #if __debug_process__
 	hist.compute_root();
-	Halide::Buffer<float> hist_buffer = hist.realize(255, input.channels());
+	Halide::Buffer<float> hist_buffer = hist.realize(256, input.channels());
 	for (int i = 0; i < hist_buffer.width(); i++) {
 		std::cout << "i " << i << " " << hist_buffer(i, 0) << std::endl;
 	}
@@ -75,12 +75,12 @@ int main(int argc, char ** argv)
 	// 2. calculate cumulative distribute function
 	Halide::Func cdf("cdf");
 	cdf(x, c) = 0.0f;
-	Halide::RDom rcdf(0, 255);
+	Halide::RDom rcdf(0, 256);
 	cdf(rcdf.x+1, c) = cdf(rcdf.x, c) + hist(rcdf.x, c); 
 
 #if __debug_process__
 	cdf.compute_root();
-	Halide::Buffer<float> cdf_buffer = cdf.realize(255, input.channels());
+	Halide::Buffer<float> cdf_buffer = cdf.realize(256, input.channels());
 	for (int i = 0; i < cdf_buffer.width(); i++) {
 		std::cout << "i " << i << " " << cdf_buffer(i, 0) << std::endl;
 	}
@@ -113,12 +113,12 @@ int main(int argc, char ** argv)
 
 #if __debug_process__
 	min_count.compute_root();
-	Halide::Buffer<float> min_buffer = min_count.realize(255, input.channels());
+	Halide::Buffer<float> min_buffer = min_count.realize(256, input.channels());
 	Halide::Buffer<float> norm_min_buffer = normalize_image(min_buffer);
 	Halide::Tools::convert_and_save_image(norm_min_buffer, "results/min_buffer.jpg");
 
 	max_count.compute_root();
-	Halide::Buffer<float> max_buffer = max_count.realize(255, input.channels());
+	Halide::Buffer<float> max_buffer = max_count.realize(256, input.channels());
 	Halide::Buffer<float> norm_max_buffer = normalize_image(max_buffer);
 	Halide::Tools::convert_and_save_image(norm_max_buffer, "results/max_buffer.jpg");
 
@@ -146,11 +146,11 @@ int main(int argc, char ** argv)
 	Halide::Func color_balance("color_balance");
 	color_balance(x, y, c) = 0.0f;
 	color_balance(x, y, c) = Halide::clamp(input(x, y, c), min_sum(c)/255.0f, max_sum(c)/255.0f);
-	
+
 	Halide::Buffer<float> output =  color_balance.realize(input.width(), input.height(), input.channels());
 	Halide::Buffer<float> norm_output = normalize_image(output);
-	Halide::Tools::convert_and_save_image(norm_output, "results/ouput.jpg");
-	
+	Halide::Tools::convert_and_save_image(norm_output, "results/ouput_jit.jpg");
+
 	return 0;
 
 }
