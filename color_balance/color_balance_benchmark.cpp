@@ -43,12 +43,15 @@ Halide::Runtime::Buffer<float> normalize_image(const Halide::Runtime::Buffer<flo
 int main(int argc, char ** argv)
 {
 
-	Halide::Runtime::Buffer<float> input = Halide::Tools::load_and_convert_image("./resources/color_balance_large.jpg");
+	std::string image_path = "/Users/vincent/Documents/Repo/Halide_Image_Process/color_balance/resources/color_balance_large.jpg";
+
+	Halide::Runtime::Buffer<float> input = Halide::Tools::load_and_convert_image(image_path);
 	Halide::Runtime::Buffer<float> output(input.width(), input.height(), 3);
 
 	double auto_schedule_on = Halide::Tools::benchmark(2, 200, [&]() {
         color_balance_auto_schedule(input, output);
     });
+    output.device_sync();
     printf("Auto schedule: %gms\n", auto_schedule_on * 1e3);
     Halide::Runtime::Buffer<float> norm_output = normalize_image(output);
 	Halide::Tools::convert_and_save_image(norm_output, "./results/output_auto_schedule.jpg");
@@ -60,13 +63,14 @@ int main(int argc, char ** argv)
     norm_output = normalize_image(output);
 	Halide::Tools::convert_and_save_image(norm_output, "./results/output_manual_schedule.jpg");
 
-	std::string image_path = "/Users/vincent/Documents/Repo/Halide_Image_Process/color_balance/resources/color_balance_large.jpg";
+	
 	cv::Mat cv_input = cv::imread(image_path, 1);
 	cv::Mat cv_output;
     double opencv = Halide::Tools::benchmark(2, 200, [&]() {
         color_balance_opencv(cv_input, cv_output);
     });
     printf("Opencv: %gms\n", opencv * 1e3);
+    cv::imwrite("./results/output_opencv.jpg", cv_output);
 
 	// if (!error) {
 	// 	Halide::Runtime::Buffer<float> norm_output = normalize_image(output);

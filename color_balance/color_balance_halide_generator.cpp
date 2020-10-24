@@ -47,7 +47,7 @@ public:
 		max_sum(c) = 0.0f;
 		max_sum(c) = Halide::sum(max_count(rcdf.x, c));
 
-		// 4. adjust the ove dark and over light pixels
+		// 4. adjust the over dark and over bright pixels
 		output(x, y, c) = Halide::clamp(input(x, y, c), min_sum(c)/255.0f, max_sum(c)/255.0f);
 	}
 

@@ -2,7 +2,7 @@
 
 int main()
 {
-	std::string image_path = "/Users/vincent/Documents/Repo/Halide_Image_Process/color_balance/resources/color_balance.jpg";
+	std::string image_path = "/Users/vincent/Documents/Repo/Halide_Image_Process/color_balance/resources/color_balance_medium.jpg";
 
 	cv::Mat img = cv::imread(image_path, 1);
     cv::Mat result;
@@ -12,9 +12,5 @@ int main()
     color_balance_opencv(img, result);
     
     cv::imshow("balance_color", result);
-    cv::waitKey(0);
-
-    result = gray_world(img);
-    cv::imshow("gray_world", result);
     cv::waitKey(0);
 }
