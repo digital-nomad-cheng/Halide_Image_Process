@@ -1,7 +1,8 @@
 #include <iostream>
-#include <opencv2/opencv.hpp>
 
-void balance_color(cv::Mat &img)
+#include "color_balance_opencv.hpp"
+
+void balance_channel(cv::Mat &img)
 {
     /* Idea is from here: https://web.stanford.edu/~sujason/ColorBalancing/simplestcb.html
      * A well balanced photo, the brightest color should be white and the darkest
@@ -113,28 +114,14 @@ cv::Mat gray_world(cv::Mat &img)
     return result;
 }
 
-
-int main()
+void color_balance_opencv(const cv::Mat& img, cv::Mat &result)
 {
-	std::string image_path = "/home/vincent/Documents/Repo/Halide_Image_Process/color_balance4.jpg";
-
-	cv::Mat img = cv::imread(image_path, 1);
-    cv::Mat result;
-	cv::imshow("img", img);
-    cv::waitKey(0);	
     std::vector<cv::Mat> bgr_channels;
-	cv::split(img, bgr_channels);
+    cv::split(img, bgr_channels);
 
-	balance_color(bgr_channels[0]);
-    balance_color(bgr_channels[1]);
-    balance_color(bgr_channels[2]);
+    balance_channel(bgr_channels[0]);
+    balance_channel(bgr_channels[1]);
+    balance_channel(bgr_channels[2]);
 
     cv::merge(bgr_channels, result);
-    
-    cv::imshow("balance_color", result);
-    cv::waitKey(0);
-
-    result = gray_world(img);
-    cv::imshow("gray_world", result);
-    cv::waitKey(0);
 }
