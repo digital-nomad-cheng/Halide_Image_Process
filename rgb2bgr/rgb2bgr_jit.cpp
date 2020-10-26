@@ -11,7 +11,9 @@ Halide::Func rgb2bgr(Halide::Buffer<uint8_t> &src)
 
 	Halide::Func dst;
 
-	dst(x, y, c) = Halide::select(c == 0, src(x, y, 2), c == 1, src(x, y, 1), src(x, y, 2));
+	// dst(x, y, c) = Halide::select(c == 0, src(x, y, 2), c == 1, src(x, y, 1), src(x, y, 2));
+	// or, below is the syntatic sugar of above
+	dst(x, y, c) = Halide::mux(c, {src(x, y, 2), src(x, y, 1), src(x, y, 0)});
 
     return dst;
 
