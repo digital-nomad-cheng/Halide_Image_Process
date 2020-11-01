@@ -29,6 +29,4 @@ int main(int argc, char ** argv)
 	LinearRGBtoSRGB.realize(output);
 
 	Halide::Tools::convert_and_save_image(output, "results/linearRGB_to_sRGB.png");
-
-
 }
