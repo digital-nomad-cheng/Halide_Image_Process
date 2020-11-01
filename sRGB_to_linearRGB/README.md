@@ -4,3 +4,4 @@ What is sRGB and linear RGB?
 
 https://entropymine.com/imageworsener/srgbformula/
 https://en.wikipedia.org/wiki/SRGB
+https://www.mathworks.com/help/images/ref/lin2rgb.html
