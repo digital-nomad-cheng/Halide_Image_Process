@@ -2,7 +2,7 @@
 
 int main()
 {
-	std::string image_path = "/Users/vincent/Documents/Repo/Halide_Image_Process/color_balance/resources/color_balance_medium.jpg";
+	std::string image_path = "/Users/vincent/Documents/Repo/Halide_Image_Process/color_balance/resources/over_exposure2.jpg";
 
 	cv::Mat img = cv::imread(image_path, 1);
     cv::Mat result;

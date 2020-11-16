@@ -6,6 +6,7 @@ g++ -std=c++11 color_balance_halide_jit.cpp -L /usr/local/lib/ -I /Users/vincent
 
 # halide aot
 g++ -std=c++11 color_balance_halide_aot.cpp -L /usr/local/lib/ -I /Users/vincent/Libs/Halide/tools -lHalide -ljpeg -lpng -o color_balance_halide_aot
+./color_balance_halide_aot
 
 # halide aot main
 g++ -std=c++11 color_balance_halide_aot_main.cpp -L . -I /Users/vincent/Libs/Halide/tools color_balance.a -ljpeg -lpng -o color_balance_halide_aot_main

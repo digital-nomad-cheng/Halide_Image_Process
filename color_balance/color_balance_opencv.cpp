@@ -29,8 +29,8 @@ void balance_channel(cv::Mat &img)
 		hist.at<float>(i, 0) += hist.at<float>(i-1, 0);
 	}
 
-	double s = 0.0265; //此参数可以调整，最好在0.1以下(0=<s<=1)
-
+	// double s = 0.0265; //此参数可以调整，最好在0.1以下(0=<s<=1)
+    double s = 0.01;
 	int min_index = 0;
     
 	while (hist.at<float>(min_index, 0) < num_pixels * s/2) {
