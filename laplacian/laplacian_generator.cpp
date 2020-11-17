@@ -6,13 +6,12 @@ enum Filter {
 	LAPLACIAN_2,	
 };
 
-class Laplacian : public HalideGnerator<Laplacian>
+class Laplacian : public Halide::Generator<Laplacian>
 {
 public:
 
-	Halide::Input<Buffer<uint8_t>> input{"input", 3};
-    Halide::Input<float> strength{"strength"};
-    Halide::Output<Buffer<uint8_t>> output{"output", 3};
+	Input<Buffer<uint8_t>> input{"input", 3};
+	Output<Buffer<uint8_t>> output{"output", 3};
 
 	Halide::GeneratorParam<enum Filter> filter{"filter", LAPLACIAN_1,
 		{
@@ -50,13 +49,15 @@ private:
 	//  0 -1  0    0  0  0    0 -1  0
 	// -1  4 -1 = -1  2 -1 +  0  2  0
 	//  0 -1  0    0  0  0    0 -1  0
-	Halide::Func laplacian_0(Halide::Func &input) {
-		clamped = Halide::BoundaryCondition::repeat_edge(input);
+	Halide::Expr laplacian_0(Halide::Func &input) {
+		clamped = Halide::BoundaryConditions::repeat_edge(input);
 		gradiant_x = -clamped(x-1, y) + 2*clamped(x, y) - clamped(x+1, y);
 		gradiant_y = -clamped(x, y-1) + 2*clamped(x, y) - clamped(x, y+1);
 		return gradiant_x(x, y, c) + gradiant_y(x, y, c);
 	}
 
+	Halide::Expr laplacian_1;
+	Halide::Expr laplacian_2;
     //  1             1 -2  1    -1              1 -2  1
     // -2 * 1 -2 1 = -2  4 -2 or  2 * -1 2 -1 = -2  4 -2
     //  1             1 -2  1    -1              1 -2  1
