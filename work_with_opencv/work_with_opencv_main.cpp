@@ -5,6 +5,7 @@
  Data stored in Halide is organized as planar mode, while data in opencv Mat is organized in interleaved mode.
  Planar mode is stored as RRRGGGBBBs, while interleaved mode is stored as RGBRGBRGB.
  We have to use the make_interleaved function to read interleaved data into planar mode.
+ Code: https://github.com/halide/Halide/blob/025f054e7ad5693be14bbabc41b7816b5c122bb3/src/runtime/HalideBuffer.h#L1723
  */
 
 int main(int argc, char **argv) 
