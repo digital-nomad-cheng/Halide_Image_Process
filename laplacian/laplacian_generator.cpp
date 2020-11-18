@@ -41,7 +41,8 @@ private:
 	Halide::Func clamped{"clamped"};
 	Halide::Func gradiant_x{"gradiant_x"};
 	Halide::Func gradiant_y{"gradiant_y"};
-	Halide::Func _output{"_output"};
+	Halide::Func gradiant_xy{"gradiant_xy"};
+
 	// d²f(x,y)/dx² + d²f(x,y)/dy²
 	// df(x,y)/dx = f(x+1, y) - f(x, y)
 	// d²f(x,y)/dx² = f(x+1, y) - 2*f(x, y) + f(x-1, y)
@@ -49,15 +50,28 @@ private:
 	//  0 -1  0    0  0  0    0 -1  0
 	// -1  4 -1 = -1  2 -1 +  0  2  0
 	//  0 -1  0    0  0  0    0 -1  0
-	Halide::Expr laplacian_0(Halide::Func &input) {
-		clamped = Halide::BoundaryConditions::repeat_edge(input);
-		gradiant_x = -clamped(x-1, y) + 2*clamped(x, y) - clamped(x+1, y);
-		gradiant_y = -clamped(x, y-1) + 2*clamped(x, y) - clamped(x, y+1);
-		return gradiant_x(x, y, c) + gradiant_y(x, y, c);
+	Halide::Func laplacian_0(Input<Buffer<uint8_t>> &input) {
+		clamped = Halide::BoundaryConditions::repeat_edge(input, {{0, input.width()}, {0, input.height()}});
+		gradiant_x(x, y) = -clamped(x-1, y) + 2*clamped(x, y) - clamped(x+1, y);
+		gradiant_y(x, y) = -clamped(x, y-1) + 2*clamped(x, y) - clamped(x, y+1);
+		gradiant_xy(x, y) = gradiant_x(x, y) + gradiant_y(x, y);
+		return gradiant_xy;
 	}
 
-	Halide::Expr laplacian_1;
-	Halide::Expr laplacian_2;
+	Halide::Func laplacian_1(Input<Buffer<uint8_t>> &input) {
+		clamped = Halide::BoundaryConditions::repeat_edge(input, {{0, input.width()}, {0, input.height()}});
+		gradiant_x(x, y) = -clamped(x-1, y) + 2*clamped(x, y) - clamped(x+1, y);
+		gradiant_y(x, y) = -clamped(x, y-1) + 2*clamped(x, y) - clamped(x, y+1);
+		gradiant_xy(x, y) = gradiant_x(x, y) + gradiant_y(x, y);
+		return gradiant_xy;
+	};
+	Halide::Func laplacian_2(Input<Buffer<uint8_t>> &input) {
+		clamped = Halide::BoundaryConditions::repeat_edge(input, {{0, input.width()}, {0, input.height()}});
+		gradiant_x(x, y) = -clamped(x-1, y) + 2*clamped(x, y) - clamped(x+1, y);
+		gradiant_y(x, y) = -clamped(x, y-1) + 2*clamped(x, y) - clamped(x, y+1);
+		gradiant_xy(x, y) = gradiant_x(x, y) + gradiant_y(x, y);
+		return gradiant_xy;
+	};
     //  1             1 -2  1    -1              1 -2  1
     // -2 * 1 -2 1 = -2  4 -2 or  2 * -1 2 -1 = -2  4 -2
     //  1             1 -2  1    -1              1 -2  1
@@ -71,3 +85,5 @@ private:
 	// 1 * 1 1 1 = 1 1 1
 	// 1           1 1 1
 };	
+
+HALIDE_REGISTER_GENERATOR(Laplacian, laplacian_gen)
