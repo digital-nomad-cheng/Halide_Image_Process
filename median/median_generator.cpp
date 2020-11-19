@@ -1,3 +1,4 @@
+#include <iostream>
 #include <Halide.h>
 
 class Median : public Halide::Generator<Median>
@@ -19,25 +20,27 @@ public:
 			output.set_estimates({{0, 3000}, {0, 3000}, {0, 3}});
 		} else {
 			int vector_size = get_target().natural_vector_size(input.type());
+			std::cout << vector_size << std::endl;
 			output
-				.split(y, yo, yi, 64).parallel(yo)
+				.split(y, yo, yi, 128).parallel(yo)
 				.split(x, xo, xi, vector_size).vectorize(xi);
-			median_y.compute_at(output, yi);
 			median_y
-				.split(y, yo, yi, 64).parallel(yo)
+				.compute_at(output, yo);
+			median_y
+				.split(y, yo, yi, 128).parallel(yo)
 				.split(x, xo, xi, vector_size).vectorize(xi);
-			median_x.compute_at(median_y, yi);
 			median_x
-				.split(y, yo, yi, 64).parallel(yo)
+				.compute_at(median_y, yo);
+			median_x
+				.split(y, yo, yi, 128).parallel(yo)
 				.split(x, xo, xi, vector_size).vectorize(xi);
 			clamped.compute_root();
-
 		}
 	}
 
 private:
 	Halide::Var x{"x"}, y{"y"}, c{"c"};
-	Halide::Var xi{"xi"}, xo{"xo"}, yi{"yi"}, yo{"yo"};
+	Halide::Var xi{"xi"}, xo{"xo"}, yi{"yi"}, yo{"yo"}, tile_index{"tile_index"};
 	Halide::Func clamped{"clamped"};
 	Halide::Func median_x{"median_x"};
 	Halide::Func median_y{"median_y"};
